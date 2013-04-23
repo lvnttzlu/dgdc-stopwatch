@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <LiquidCrystal.h>
 
+#define BACKLIGHT 6
+
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
 
@@ -60,10 +62,10 @@ void setup() {
 
   pinMode(0, INPUT);
   pinMode(1, INPUT);
-  pinMode(13, OUTPUT);
+  pinMode(BACKLIGHT, OUTPUT);
 
   next_preset();
-  analogWrite(13, backlight);
+  analogWrite(BACKLIGHT, backlight);
 }
 
 void draw_clock(char *fmt, int16_t clock) {
@@ -115,7 +117,7 @@ void read_buttons() {
   case 3:
     if (state == SETUP) {
       backlight += 32;
-      analogWrite(13, backlight);
+      analogWrite(BACKLIGHT, backlight);
     } else {
       state = TIMEOUT;
       jam_clock = 1;
