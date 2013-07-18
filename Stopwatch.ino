@@ -3,9 +3,11 @@
 #include <LiquidCrystal.h>
 
 #define BACKLIGHT 6
+#define BTN_J 7
+#define BTN_L 8
 
 // initialize the library with the numbers of the interface pins
-LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+LiquidCrystal lcd(0, 1, 2, 3, 4, 5);
 
 //
 // Clock presets
@@ -60,8 +62,8 @@ void setup() {
   // set up the LCD's number of columns and rows: 
   lcd.begin(16, 2);
 
-  pinMode(0, INPUT);
-  pinMode(1, INPUT);
+  pinMode(BTN_J, INPUT);
+  pinMode(BTN_L, INPUT);
   pinMode(BACKLIGHT, OUTPUT);
 
   next_preset();
@@ -71,7 +73,7 @@ void setup() {
 void draw_clock(char *fmt, int16_t clock) {
   char time[10];
 
-  clock = abs(clock) / 10;
+  clock = (abs(clock) + 9) / 10;
   snprintf(time, 10, fmt, clock / 60, clock % 60);
   lcd.print(time);
 }
@@ -88,7 +90,10 @@ void draw() {
 int last_button = 0;
 
 void read_buttons() {
-  int this_button = digitalRead(0) + (digitalRead(1) << 1);
+  int this_button = 0;
+ 
+  this_button |= digitalRead(BTN_J) ? 1 : 0;
+  this_button |= digitalRead(BTN_L) ? 2 : 0;
 
   // This sort of debounces things.
   if (this_button <= last_button) {
@@ -108,9 +113,6 @@ void read_buttons() {
     }
     break;
   case 2:
-    if (state == SETUP) {
-      lcd.clear();
-    }
     state = JAM;
     jam_clock = jam_duration;
     break;
@@ -124,6 +126,7 @@ void read_buttons() {
     }
     break;
   }
+  lcd.clear();
 }
 
 unsigned long then = 0;
